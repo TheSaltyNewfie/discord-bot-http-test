@@ -85,30 +85,44 @@ export const ChannelViewer = ({
     }
 
     useEffect(() => {
-        getMessages()
+        if (isOpen) getMessages()
     }, [channel_id])
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isDismissable={true}>
+        <Modal isOpen={isOpen} onClose={onClose} isDismissable={true} className="h-dvh">
             <ModalContent>
                 <ModalHeader>Channel Viewer</ModalHeader>
                 <ModalBody>
-                    <div className="h-96 overflow-auto">
+                    <div className="h-dvh overflow-auto">
                         {messages.map((message) => (
                             <Card key={message.id}>
                                 <CardHeader>
                                     {message.authorId}
                                 </CardHeader>
                                 <CardBody>
-                                    {message.embeds.length ? <p>{message.embeds[0].title}</p> : <p>{message.content}</p>}
+                                    {
+                                        message.embeds.length ?
+                                            <div>
+                                                <p className="italic">Embed</p>
+                                                <p>{message.embeds[0].title}</p>
+                                                {
+                                                    message.embeds[0].fields ?
+                                                        <div>
+                                                            <p>{message.embeds[0].fields[0].name}:</p>
+                                                            <p>{message.embeds[0].fields[0].value}</p>
+                                                        </div>
+                                                        :
+                                                        <p>No Fields</p>
+                                                }
+                                            </div>
+                                            :
+                                            <p>{message.content}</p>
+                                    }
                                 </CardBody>
                             </Card>
                         ))}
                     </div>
                 </ModalBody>
-                <ModalFooter>
-                    <Button onClick={() => onClose()}>Close</Button>
-                </ModalFooter>
             </ModalContent>
         </Modal>
     )
