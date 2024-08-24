@@ -18,4 +18,5 @@ export const siteConfig = {
   links: {
     github: "https://github.com/nextui-org/nextui",
   },
+  api: "http://192.168.4.123:3000"
 };

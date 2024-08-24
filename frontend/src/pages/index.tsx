@@ -16,7 +16,7 @@ import {
   TableCell
 } from "@nextui-org/react"
 import { Button, ButtonGroup } from "@nextui-org/react"
-import { ChannelViewer } from "@/components/channels"
+import { ChannelViewer, ChannelMessage } from "@/components/channels"
 
 import axios from "axios"
 import { useEffect, useState } from "react"
@@ -37,10 +37,11 @@ export default function IndexPage() {
 
   const [channels, setChannels] = useState<Channel[]>([])
   const [showChannel, setShowChannel] = useState(false)
+  const [showMessageBox, setShowMessageBox] = useState(false)
   const [channelId, setChannelId] = useState<string>("0")
 
   const getChannels = async () => {
-    const response = await axios.get("http://localhost:3000/api/bot/channels")
+    const response = await axios.get(`${siteConfig.api}/api/bot/channels`)
 
     const filtered = response.data.filter((channel: Channel) => channel.type !== "Category")
     setChannels(filtered)
@@ -51,6 +52,11 @@ export default function IndexPage() {
     setShowChannel(true)
   }
 
+  const clickMessage = (channel_id: string) => {
+    setChannelId(channel_id)
+    setShowMessageBox(true)
+  }
+
   useEffect(() => {
     getChannels()
   }, [])
@@ -58,6 +64,7 @@ export default function IndexPage() {
   return (
     <DefaultLayout>
       <ChannelViewer isOpen={showChannel} onClose={() => setShowChannel(false)} channel_id={channelId} />
+      <ChannelMessage isOpen={showMessageBox} onClose={() => setShowMessageBox(false)} channel_id={channelId} />
 
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <Table aria-label="Table of channels">
@@ -73,7 +80,7 @@ export default function IndexPage() {
                 <TableCell>{channel.type}</TableCell>
                 <TableCell>
                   <ButtonGroup>
-                    <Button color="primary">Message</Button>
+                    <Button color="primary" onClick={() => clickMessage(channel.id.toString())}>Message</Button>
                     <Button color="secondary" onClick={() => clickView(channel.id.toString())}>View</Button>
                   </ButtonGroup>
                 </TableCell>

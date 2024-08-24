@@ -9,6 +9,8 @@ import { ButtonGroup, Button } from "@nextui-org/react"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/react"
+import { siteConfig } from "@/config/site"
+import { Input } from "@nextui-org/react"
 
 export type Message = {
     channelId: string
@@ -79,7 +81,7 @@ export const ChannelViewer = ({
     const [messages, setMessages] = useState<Message[]>([])
 
     const getMessages = async () => {
-        const res = await axios.get(`http://localhost:3000/api/bot/channels/messages/${BigInt(channel_id)}`)
+        const res = await axios.get(`${siteConfig.api}/api/bot/channels/messages/${BigInt(channel_id)}`)
 
         setMessages(res.data)
     }
@@ -125,5 +127,47 @@ export const ChannelViewer = ({
                 </ModalBody>
             </ModalContent>
         </Modal>
+    )
+}
+
+export const ChannelMessage = ({
+    isOpen,
+    onClose,
+    channel_id
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    channel_id: string;
+}) => {
+    const [message, setMessage] = useState("")
+
+    const sendMessage = async () => {
+        await axios.post(`${siteConfig.api}/api/bot/embed`,
+            {
+                channel_id,
+                message
+            }
+        )
+    }
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isDismissable={true} className="" >
+            <ModalContent>
+                <ModalHeader>Channel Viewer</ModalHeader>
+                <ModalBody>
+                    <Input
+                        onChange={(e) => setMessage(e.target.value)}
+                        value={message}
+                        placeholder="Message"
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <ButtonGroup>
+                        <Button color="success" onClick={() => sendMessage()}>Send</Button>
+                        <Button color="danger" onClick={() => onClose()}>Cancel</Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal >
     )
 }
